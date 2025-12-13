@@ -46,5 +46,3 @@ pip install -r requirements.txt
 # Run the pipeline
 python -m src.agents.qna_agent
 ```
-
-
