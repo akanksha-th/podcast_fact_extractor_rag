@@ -2,3 +2,5 @@ yt-dlp
 faster_whisper
 sentence-transformers
 qdrant_client
+langchain
+langgraph

@@ -26,11 +26,12 @@ def get_transcription(url: str, model=MODEL, output="data/podcast_01"):
 
                 import requests
                 vtt_data = requests.get(transcript_url).text
-                with open(json_transcripts_path, "w") as jf:
-                    json.dump(vtt_data, jf, indent=2)
+                new_data = json.loads(vtt_data)
+                # with open(json_transcripts_path, "w") as jf:
+                #     json.dump(new_data, jf, indent=2)
 
                 from src.utils.yt_parser import parse_youtube_json_transcript
-                cleaned = parse_youtube_json_transcript(vtt_data)
+                cleaned = parse_youtube_json_transcript(new_data)
 
                 print("[Ingestion] Found YouTube subtitles. Using them.")
                 return cleaned
@@ -61,7 +62,7 @@ def get_transcription(url: str, model=MODEL, output="data/podcast_01"):
         return RuntimeError(f"Audio download failed: {e}")
 
     print("[Transcription] Starting faster-whisper transcription...")
-    segments, _ = model.transcribe(output)
+    segments, _ = model.transcribe(output+".mp3")
     text = " ".join([s.text for s in segments])
     print(f"[Transcription] Sucessfully transcribed using faster-whisper.")
 
