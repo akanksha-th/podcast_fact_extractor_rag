@@ -2,27 +2,28 @@
 A lightweight Retrieval-Augmented-Generation (RAG) system design to extract factual insights from podcast transcripts.
 
 ---
-<div style="display: flex; align-items: flex-start; gap: 20px;">
-
-  <!-- Left column: Graph image -->
-  <div style="flex: 1;">
-    <img src="graph_images/agent_graph.png" alt="Agent Graph" style="max-width: 60%; border-radius: 10px;"/>
-  </div>
-  
-  <!-- Right column: Project overview -->
-  <div style="flex: 1;">
+<table>
+<tr>
+<td>
     
-  ## Project Overview
+## Project Overview
+
+This project implements a **mini RAG pipeline** to:
+
+1. Transcribe the podcast.
+2. Chunk and embed the transcript data.
+3. Retrieve relevant information for a user query.
+4. Generate concise, accurate answers using an LLM.
   
-  This project implements a **mini RAG pipeline** to:
-  
-  1. Transcribe the podcast.
-  2. Chunk and embed the transcript data.
-  3. Retrieve relevant information for a user query.
-  4. Generate concise, accurate answers using an LLM.
-  
-  </div>
-</div>
+</td>
+<td>
+
+<img src="graph_images/agent_graph.png" alt="Agent Graph" style="width:100%; max-width:400px; border-radius:10px;"/>
+
+</td>
+</tr>
+</table>
+
 ---
 
 ## Tech Stack
