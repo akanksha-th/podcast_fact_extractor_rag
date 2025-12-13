@@ -14,6 +14,13 @@ This project implements a **mini RAG pipeline** to:
 2. Chunk and embed the transcript data.
 3. Retrieve relevant information for a user query.
 4. Generate concise, accurate answers using an LLM.
+
+## How It Works
+
+1. **Ingest Podcast** - Takes the **YouTube podcast url** as input and fetches its transcripts.
+2. **Chunking and Embedding** - Breaks transcripts into chunks and generates embeddings.
+3. **Store and Search** - Store embeddings in a vector database (Qdrant) for semantic search.
+4. **Answer Queries** - User asks a question —> relevant chunks retrieved —> LLM generates an answer.
   
 </td>
 <td>
@@ -29,6 +36,7 @@ This project implements a **mini RAG pipeline** to:
 ## Tech Stack
 
 - **Python**
+- **Faster-Whisper**
 - **Langchain / HuggingFace / Sentence Transformers** - For embeddings
 - **LLM (HuggingFace)** - For answer generation
 - **Qdrant** - For vector storage and search
