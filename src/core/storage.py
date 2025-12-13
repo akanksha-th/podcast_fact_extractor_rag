@@ -19,5 +19,9 @@ def store_vectors(name: str, chunks, embeddings):
     
 
 def fetch_emb(name: str, query_emb, limit: int):
-    hits = client.search(name, query_emb.tolist(), limit=limit)
-    return [h.payload["text"] for h in hits]
+    # "search" ONLY works with keyword arguments
+    results = client.query_points(
+        collection_name=name, 
+        query=query_emb.tolist(), 
+        limit=limit)
+    return [point.payload["text"] for point in results.points]

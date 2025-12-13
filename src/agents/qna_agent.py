@@ -3,6 +3,8 @@ from typing import TypedDict, List
 from src.core.ingestion import get_transcription
 from sentence_transformers import SentenceTransformer
 from src.core.storage import store_vectors, fetch_emb
+from src.core.llm import llm, rag_prompt
+from IPython.display import display, Image
 
 
 class ExtractorState(TypedDict):
@@ -45,12 +47,13 @@ def store_node(state: ExtractorState) -> ExtractorState:
         embeddings=state["embeddings"]
     )
     print("[Agent] Stored vectors in Qdrant.")
+    return state
 
 def get_query_node(state: ExtractorState) -> ExtractorState:
     query = input("\nAsk a question (type 'exit' to quit)").strip()
 
     state["query"] = query
-    state["should_exit"] = query.lower() in {"exit", "quit"}
+    state["should_exit"] = True if query.lower() in {"exit", "quit"} else False
 
     return state
 
@@ -60,7 +63,7 @@ def retrieve_node(state: ExtractorState) -> ExtractorState:
     docs = fetch_emb(name="podcast_01", query_emb=q_emb, limit=5)
 
     state["retrieved_docs"] = docs
-    print("[Agent] Retrieved relevant chunks.")
+    # print("[Agent] Retrieved relevant chunks.")
     return state
 
 def generate_node(state: ExtractorState) -> ExtractorState:
@@ -68,17 +71,23 @@ def generate_node(state: ExtractorState) -> ExtractorState:
     context = "\n".join(state["retrieved_docs"])
     query = state["query"]
 
-    answer = f"""
-        Answer based on the podcast context:
+    # prompt_value = rag_prompt.invoke({
+    #     "context": context,
+    #     "question": query
+    # })
+    # answer = llm.invoke(prompt_value)
 
-        User_query: {query}
-
-        Context: 
-        {context}
-    """
+    # COMPOSITION
+    rag_chain = rag_prompt | llm
+    answer = rag_chain.invoke({
+        "context": context,
+        "question": query
+    })
 
     state["answer"] = answer
-    print("[Agent] Answer generated")
+    print("\n[Agent] Answer:\n", answer)
+    # print("[Agent] Answer generated")
+
     return state
 
 def should_continue(state: ExtractorState) -> str:
@@ -129,3 +138,5 @@ if __name__ == "__main__":
         "answer": "",
         "should_exit": False
     })
+
+    # img_bytes = app.get_graph().draw_mermaid_png()
