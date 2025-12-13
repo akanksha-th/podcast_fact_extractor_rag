@@ -5,6 +5,7 @@ from sentence_transformers import SentenceTransformer
 from src.core.storage import store_vectors, fetch_emb
 from src.core.llm import llm, rag_prompt
 from IPython.display import display, Image
+import os
 
 
 class ExtractorState(TypedDict):
@@ -139,4 +140,10 @@ if __name__ == "__main__":
         "should_exit": False
     })
 
-    # img_bytes = app.get_graph().draw_mermaid_png()
+    img_bytes = app.get_graph().draw_mermaid_png()
+    os.makedirs("graph_images", exist_ok=True)
+    output_path = "graph_images/agent_graph.png"
+
+    with open(output_path, "wb") as f:
+        f.write(img_bytes)
+    print(f"Graph saved to: {output_path}")
