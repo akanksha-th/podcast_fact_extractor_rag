@@ -1,10 +1,9 @@
 import yt_dlp, json
 from faster_whisper import WhisperModel
 
-MODEL = WhisperModel("small")
 json_transcripts_path = "data/yt_json_transcripts.json"
 
-def get_transcription(url: str, model=MODEL, output="data/podcast_01"):
+def get_transcription(url: str, output="data/podcast_01"):
     """
     1. Tries fetching YouTube subtitles for transcription.
     2. If unavailable, downloads audio and transcribes.
@@ -13,7 +12,7 @@ def get_transcription(url: str, model=MODEL, output="data/podcast_01"):
         ydl_opts = {
             "skip_download": True,
             "writesubtitles": True,
-            "subtitlesformat": "vtt",
+            "subtitlesformat": "json3",
             "subtitleslangs": ["en"],
             "quiet": True
         }
@@ -25,8 +24,8 @@ def get_transcription(url: str, model=MODEL, output="data/podcast_01"):
                 transcript_url = subs["en"][0]["url"]
 
                 import requests
-                vtt_data = requests.get(transcript_url).text
-                new_data = json.loads(vtt_data)
+                json_data = requests.get(transcript_url).text
+                new_data = json.loads(json_data)
                 # with open(json_transcripts_path, "w") as jf:
                 #     json.dump(new_data, jf, indent=2)
 
@@ -36,7 +35,7 @@ def get_transcription(url: str, model=MODEL, output="data/podcast_01"):
                 print("[Ingestion] Found YouTube subtitles. Using them.")
                 return cleaned
             
-        print("[Ingestion] No English subtitles found. Faliing back to audio download.")
+        print("[Ingestion] No English subtitles found. Falling back to audio download.")
     
     except Exception as e:
         print(f"[Warning] Could not fetch subtitles: {e}")
@@ -59,9 +58,10 @@ def get_transcription(url: str, model=MODEL, output="data/podcast_01"):
         print(f"[Ingestion] Audio saved sucesssfully.")
     
     except Exception as e:
-        return RuntimeError(f"Audio download failed: {e}")
+        raise RuntimeError(f"Audio download failed: {e}")
 
     print("[Transcription] Starting faster-whisper transcription...")
+    model = WhisperModel("small")
     segments, _ = model.transcribe(output+".mp3")
     text = " ".join([s.text for s in segments])
     print(f"[Transcription] Sucessfully transcribed using faster-whisper.")

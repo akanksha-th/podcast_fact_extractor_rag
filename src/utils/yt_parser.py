@@ -1,6 +1,6 @@
 import json
 
-def parse_youtube_json_transcript(data: str) -> str:
+def parse_youtube_json_transcript(data: dict) -> str:
     """
     Converts Youtube json subtitle format into plain text.
     """
@@ -19,8 +19,8 @@ def parse_youtube_json_transcript(data: str) -> str:
 
     cleaned_text = " ".join(lines)
 
-    with open("data/cleaned_text.txt", "w") as f:
-        f.write(cleaned_text)
+    # with open("data/cleaned_text.txt", "w") as f:
+    #     f.write(cleaned_text)
 
     return cleaned_text
 
