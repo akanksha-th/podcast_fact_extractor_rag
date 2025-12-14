@@ -6,3 +6,4 @@ gpt4all
 langchain
 langchain-community
 langgraph
+streamlit

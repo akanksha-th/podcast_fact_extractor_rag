@@ -12,6 +12,7 @@ def get_transcription(url: str, output="data/podcast_01"):
         ydl_opts = {
             "skip_download": True,
             "writesubtitles": True,
+            'no_warnings': True,
             "subtitlesformat": "json3",
             "subtitleslangs": ["en"],
             "quiet": True
@@ -45,6 +46,7 @@ def get_transcription(url: str, output="data/podcast_01"):
             "format": "bestaudio/best",
             "outtmpl": output,
             "quiet": True,
+            'no_warnings': True,
             "postprocessors": [{
                 "key": "FFmpegExtractAudio",
                 "preferredcodec": "mp3",

@@ -1,7 +1,8 @@
 from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance, PointStruct
 
-client = QdrantClient(path="data/qdrant")    # Using local persistent storage
+# client = QdrantClient(path="data/qdrant")    # Using local persistent storage
+client = QdrantClient(":memory:") 
 
 def store_vectors(name: str, chunks, embeddings):
     if not client.collection_exists(name):

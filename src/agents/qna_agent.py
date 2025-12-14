@@ -51,9 +51,10 @@ def store_node(state: ExtractorState) -> ExtractorState:
     return state
 
 def get_query_node(state: ExtractorState) -> ExtractorState:
+    # For CLI
     query = input("\nAsk a question (type 'exit' to quit)").strip()
-
     state["query"] = query
+    # query = state["query"]
     state["should_exit"] = True if query.lower() in {"exit", "quit"} else False
 
     return state
@@ -110,17 +111,18 @@ def build_graph() -> StateGraph:
     graph.add_edge("embed", "store")
 
     graph.add_edge("store", "get_query")
-    graph.add_edge("get_query", "retrieve")
-    graph.add_edge("retrieve", "generate")
 
     graph.add_conditional_edges(
-        "generate",
+        "get_query",
         should_continue,
         {
-            "retrieve": "get_query",
+            "retrieve": "retrieve",
             "end": END
         }
     )
+
+    graph.add_edge("retrieve", "generate")
+    graph.add_edge("generate", "get_query")
 
     return graph.compile()
 
@@ -128,6 +130,7 @@ def build_graph() -> StateGraph:
 if __name__ == "__main__":
     # run on CLI using "python -m src.agents.qna_agent"
     url = "https://www.youtube.com/watch?v=l5GpwCGO8Nc&pp=ygUeZW5nbGlzaCBwb2RjYXN0IG9uIGFydCB0aGVyYXB5"
+    # q = "what is this podcast about?"
     app = build_graph()
     result = app.invoke({
         "url": url,
