@@ -46,7 +46,7 @@ The system is implemented as a LangGraph state machine, where each step is a cle
 
 ## Tech Stack
 
-- **Python**
+- **Python**: 3.11+
 - **yt-dlp / Faster-Whisper** - For transcript ingestion
 - **Langchain / HuggingFace / Sentence Transformers** - For embeddings
 - **LLM (HuggingFace)** - For answer generation
@@ -80,8 +80,7 @@ pip install -r requirements.txt
 python -m src.agents.qna_agent
 ```
 
-## 
-Before running the pipeline, download LLM model from: ()
+---
 
 ## License
 MIT License
