@@ -3,6 +3,7 @@ from typing import TypedDict, List
 from src.core.ingestion import get_transcription
 from sentence_transformers import SentenceTransformer
 from src.core.storage import store_vectors, fetch_emb
+from src.utils.cleaner import clean_transcript
 from src.core.llm import llm, rag_prompt, notes_prompt
 from IPython.display import display, Image
 import os
@@ -67,6 +68,7 @@ def notes_node(state: ExtractorState) -> ExtractorState:
     notes_per_chunk = []
 
     for chunk in state["chunks"][:20]:  # Chunk cap
+        chunk = clean_transcript(chunk)
         chunk_notes = notes_chain.invoke({
             "trans_context": chunk
         })

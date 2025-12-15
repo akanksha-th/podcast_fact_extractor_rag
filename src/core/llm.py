@@ -27,13 +27,15 @@ rag_prompt = ChatPromptTemplate([
 notes_prompt = ChatPromptTemplate([
     (
         "system",
-        "You are an expert note-taker. "
-        "Create factual, concise notes ONLY from the given transcript chunk. "
-        "Do not add new information. "
-        "Use bullet points."
+        "You are an expert note-taker.\n"
+        "- Write ONLY bullet points\n"
+        "- Use simple language\n"
+        "- Do NOT repeat the transcript\n"
+        "- Do NOT include speaker names\n"
+        "- Do NOT include instructions\n"
     ),
     (
         "human",
-        "{trans_context}"
+        "Transcript:\n{trans_context}\n\nNotes:"
     )
 ])

@@ -1,5 +1,5 @@
 # Podcast Fact Extractor RAG
-A lightweight Retrieval-Augmented-Generation (RAG) system design to extract factual insights from podcast transcripts.
+A lightweight Retrieval-Augmented-Generation (RAG) system design to extract factual insights and structures notes (not fully perfect) from podcast transcripts.
 
 ---
 <table>
@@ -10,10 +10,11 @@ A lightweight Retrieval-Augmented-Generation (RAG) system design to extract fact
 
 This project implements a **mini RAG pipeline** to:
 
-1. Transcribe the podcast.
-2. Chunk and embed the transcript data.
-3. Retrieve relevant information for a user query.
-4. Generate concise, accurate answers using an LLM.
+Transcribing podcasts from YouTube or audio.
+2. Chunking and embedding transcript data.
+3. Storing embeddings in a vector database.
+4. Answering user questions using retrieval-augmented generation.
+5. Generating AI-powered, structured notes from podcast transcripts.
 
 ## How It Works
 
@@ -25,18 +26,26 @@ The system is implemented as a LangGraph state machine, where each step is a cle
 
 3. **Store Node** - Stores embeddings and text payloads in a local Qdrant vector database.
 
-4. **Query Node (User Input)** - Accepts user questions in a loop until exit / quit is entered.
+4. **Task Selection Node**  
+   Allows the user to choose between:
+   - Question Answering (Q&A)
+   - AI-powered Notes Generation
 
-5. **Retrieve Node** - Performs semantic search in Qdrant to retrieve the most relevant transcript chunks.
+5. **Query Node (User Input)** - Accepts user questions in a loop until exit / quit is entered.
 
-6. **Generate Node** - Uses a Retrieval-Augmented prompt and an open-source LLM to generate factual answers only from retrieved context.
+6. **Retrieve Node** - Performs semantic search in Qdrant to retrieve the most relevant transcript chunks.
 
-7. **Conditional Loop** - The agent continues answering questions until the user exits.
+7. **Generate Node** - Uses a Retrieval-Augmented prompt and an open-source LLM to generate factual answers only from retrieved context.
+
+8. **Notes Generation Node (Notes Mode)**  
+Generates structured, simplified notes from transcript chunks using a dedicated notes prompt and chunk-wise summarization.
+   
+9. **Conditional Loop** - The agent continues answering questions until the user exits.
   
 </td>
 <td>
 
-<img src="graph_images/agent_graph.png" alt="Agent Graph" style="width:100%; max-width:400px; border-radius:10px;"/>
+<img src="graph_images/agent_graph_v1.png" alt="Agent Graph" style="width:100%; max-width:400px; border-radius:10px;"/>
 
 </td>
 </tr>
@@ -49,10 +58,9 @@ The system is implemented as a LangGraph state machine, where each step is a cle
 - **Python**: 3.11+
 - **yt-dlp / Faster-Whisper** - For transcript ingestion
 - **Langchain / HuggingFace / Sentence Transformers** - For embeddings
-- **LLM (HuggingFace)** - For answer generation
+- **Local LLM (GPT4All / GGUF)** - For offline answer and notes generation
 - **Qdrant** - For vector storage and search
-- **GPT4All / GGUF-based LLM** - Open-source local inference
-_.No proprietary APIs are required. The system runs fully offline after setup.._
+_No proprietary APIs are required. The system runs fully offline after setup._
 
 ---
 
@@ -77,7 +85,8 @@ cd podcast_fact_extractor_rag
 pip install -r requirements.txt
 
 # Run the pipeline
-python -m src.agents.qna_agent
+python -m src.agents.qna_agent_v0   # Older version - v0
+python -m src.agents.qna_and_notes_agent_v1     # v1
 ```
 
 ---
