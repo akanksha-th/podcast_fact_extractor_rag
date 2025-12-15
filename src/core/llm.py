@@ -3,8 +3,8 @@ from langchain_core.prompts import ChatPromptTemplate
 
 llm = GPT4All(
     model="./models/phi-2.Q4_0.gguf",
-    n_predict=256,
-    temp=0.2,
+    n_predict=128,  # lowered generation length from 256 to 128
+    temp=0.1,
     top_k=40,
     top_p=0.9,
     repeat_penalty=1.1,
@@ -24,3 +24,16 @@ rag_prompt = ChatPromptTemplate([
     )
 ])
 
+notes_prompt = ChatPromptTemplate([
+    (
+        "system",
+        "You are an expert note-taker. "
+        "Create factual, concise notes ONLY from the given transcript chunk. "
+        "Do not add new information. "
+        "Use bullet points."
+    ),
+    (
+        "human",
+        "{trans_context}"
+    )
+])

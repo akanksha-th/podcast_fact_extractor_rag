@@ -128,7 +128,7 @@ def build_graph() -> StateGraph:
 
 
 if __name__ == "__main__":
-    # run on CLI using "python -m src.agents.qna_agent"
+    # run on CLI using "python -m src.agents.qna_agent_v0"
     url = "https://www.youtube.com/watch?v=l5GpwCGO8Nc&pp=ygUeZW5nbGlzaCBwb2RjYXN0IG9uIGFydCB0aGVyYXB5"
     # q = "what is this podcast about?"
     app = build_graph()
@@ -145,7 +145,7 @@ if __name__ == "__main__":
 
     img_bytes = app.get_graph().draw_mermaid_png()
     os.makedirs("graph_images", exist_ok=True)
-    output_path = "graph_images/agent_graph.png"
+    output_path = "graph_images/agent_graph_v0.png"
 
     with open(output_path, "wb") as f:
         f.write(img_bytes)

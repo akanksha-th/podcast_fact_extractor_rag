@@ -137,8 +137,6 @@ MANIFEST
 # -----------------------------
 # PROJECT SPECIFIC
 # -----------------------------
-
-# Do not commit scraped data or intermediate JSON dumps
 data/raw/
 data/processed/
 data/temp/
@@ -148,3 +146,5 @@ data/*.json
 langgraph_cache/
 graph_state/
 graph_temp/
+
+
