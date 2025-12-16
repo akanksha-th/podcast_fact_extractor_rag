@@ -167,7 +167,7 @@ def build_graph() -> StateGraph:
 
 
 if __name__ == "__main__":
-    # run on CLI using "python -m src.agents.qna_and_notes_agent_v1"
+    # run on CLI using "python -m src.agents.agent_v1"
 
     url = "https://youtu.be/cUbe6HbFncE?si=ellaHl0A8pERo_OH"
     app = build_graph()

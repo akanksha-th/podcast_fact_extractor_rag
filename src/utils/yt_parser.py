@@ -19,9 +19,6 @@ def parse_youtube_json_transcript(data: dict) -> str:
 
     cleaned_text = " ".join(lines)
 
-    # with open("data/cleaned_text.txt", "w") as f:
-    #     f.write(cleaned_text)
-
     return cleaned_text
 
 if __name__ == "__main__":

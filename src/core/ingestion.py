@@ -27,8 +27,8 @@ def get_transcription(url: str, output="data/podcast_01"):
                 import requests
                 json_data = requests.get(transcript_url).text
                 new_data = json.loads(json_data)
-                # with open(json_transcripts_path, "w") as jf:
-                #     json.dump(new_data, jf, indent=2)
+                with open(json_transcripts_path, "w") as jf:
+                    json.dump(new_data, jf, indent=2)
 
                 from src.utils.yt_parser import parse_youtube_json_transcript
                 cleaned = parse_youtube_json_transcript(new_data)
@@ -63,15 +63,25 @@ def get_transcription(url: str, output="data/podcast_01"):
         raise RuntimeError(f"Audio download failed: {e}")
 
     print("[Transcription] Starting faster-whisper transcription...")
-    model = WhisperModel("small")
-    segments, _ = model.transcribe(output+".mp3")
-    text = " ".join([s.text for s in segments])
+    model = WhisperModel("small", device="cpu", compute_type="int8")
+
+    # Always make sure to get the transcripts in English
+    segments, _ = model.transcribe(
+        output+".mp3",
+        task="translate",
+        language="en")
+    
+    text = "\n".join([s.text for s in segments])
+    with open("data/transcriptions.txt", "w") as f:
+        f.write(text)
     print(f"[Transcription] Sucessfully transcribed using faster-whisper.")
 
     return text
 
 if __name__ == "__main__":
-    url = "https://youtu.be/7ARBJQn6QkM?si=Ot5WxMcseHI-jPid"
+    # url = "https://youtu.be/7ARBJQn6QkM?si=Ot5WxMcseHI-jPid"      # English Podcast
+    url = "https://www.youtube.com/watch?v=vrf4_XMSlE0"     # Italian Podcast
+    
     transcript = get_transcription(url)
     print(f"Length of transcript: {len(transcript)}")
-    print(transcript[:500], "...")
+    # print(transcript[:500], "...")

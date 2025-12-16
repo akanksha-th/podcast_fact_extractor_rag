@@ -1,5 +1,5 @@
 # Podcast Fact Extractor RAG
-A lightweight Retrieval-Augmented-Generation (RAG) system design to extract factual insights and structures notes (not fully perfect) from podcast transcripts.
+A lightweight Retrieval-Augmented-Generation (RAG) system designed to extract factual insights and structures notes from podcast transcripts.
 
 ---
 <table>
@@ -35,7 +35,7 @@ The system is implemented as a LangGraph state machine, where each step is a cle
 
 6. **Retrieve Node** - Performs semantic search in Qdrant to retrieve the most relevant transcript chunks.
 
-7. **Generate Node** - Uses a Retrieval-Augmented prompt and an open-source LLM to generate factual answers only from retrieved context.
+7. **Generate Node** - Uses a Retrieval-Augmented prompt and an open-source LLM to generate answers strictly grounded in retrieved transcript context.
 
 8. **Notes Generation Node (Notes Mode)**  
 Generates structured, simplified notes from transcript chunks using a dedicated notes prompt and chunk-wise summarization.
@@ -57,7 +57,7 @@ Generates structured, simplified notes from transcript chunks using a dedicated 
 
 - **Python**: 3.11+
 - **yt-dlp / Faster-Whisper** - For transcript ingestion
-- **Langchain / HuggingFace / Sentence Transformers** - For embeddings
+- **Langchain / Hugging Face / Sentence Transformers** - For embeddings
 - **Local LLM (GPT4All / GGUF)** - For offline answer and notes generation
 - **Qdrant** - For vector storage and search
 _No proprietary APIs are required. The system runs fully offline after setup._
@@ -69,7 +69,7 @@ _No proprietary APIs are required. The system runs fully offline after setup._
 This project uses a local, open-source LLM (phi-2, GGUF format) for answer generation. 
 The model must be downloaded before running the agent.
 
-Download the model file from HuhggingFace using the link: [Phi-2 GGUF Model](https://huggingface.co/TheBloke/phi-2-GGUF/resolve/main/phi-2.Q4_0.gguf?download=true)
+Download the model file from Huhgging Face using the link: [Phi-2 GGUF Model](https://huggingface.co/TheBloke/phi-2-GGUF/resolve/main/phi-2.Q4_0.gguf?download=true)
 
 After downloading the file, move it to the models folder.
 
@@ -88,6 +88,16 @@ pip install -r requirements.txt
 python -m src.agents.qna_agent_v0   # Older version - v0
 python -m src.agents.qna_and_notes_agent_v1     # v1
 ```
+
+---
+
+## Versions
+
+v0    —> Simple QnA on CLI
+v1.1  —> Multilingual control
+v1.2  —> Audio query support
+v1.3  —> Multi-source ingestion (Spotify)
+v2    —> Knowledge Graph Augmentation
 
 ---
 

@@ -25,7 +25,7 @@ jobs:
             - name: Validate agent graph
               run: |
                 python -c "
-                from src.agents.qna_and_notes_agent_v1 import build_graph
+                from src.agents.agent_v1 import build_graph
                 app = build_graph()
                 print('Graph compiled sucessfully')
                 "

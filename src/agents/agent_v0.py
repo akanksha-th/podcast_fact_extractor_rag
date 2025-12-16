@@ -128,7 +128,7 @@ def build_graph() -> StateGraph:
 
 
 if __name__ == "__main__":
-    # run on CLI using "python -m src.agents.qna_agent_v0"
+    # run on CLI using "python -m src.agents.agent_v0"
     url = "https://www.youtube.com/watch?v=l5GpwCGO8Nc&pp=ygUeZW5nbGlzaCBwb2RjYXN0IG9uIGFydCB0aGVyYXB5"
     # q = "what is this podcast about?"
     app = build_graph()
