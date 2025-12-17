@@ -1,6 +1,7 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-import nltk
-nltk.download("punkt")
+import nltk, os
+cache_dir = os.path.join("data/", 'my_nltk_cache')
+nltk.download('punkt', download_dir=cache_dir)
 
 
 # ---------

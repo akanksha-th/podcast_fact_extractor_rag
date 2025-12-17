@@ -94,7 +94,7 @@ python -m src.agents.qna_and_notes_agent_v1     # v1
 ## Versions
 
 v0    —> Simple QnA on CLI
-v1.0  —> Hierarchical Notes Agent(chunk summaries, section summaries, final structured notes)
+v1.0  —> Hierarchical Notes Agent
 v1.1  —> Multilingual control
 v1.2  —> Audio query support
 v1.3  —> Multi-source ingestion (Spotify)
