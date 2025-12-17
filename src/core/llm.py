@@ -54,13 +54,13 @@ section_llm = GPT4All(
 sec_notes_prompt = ChatPromptTemplate([
     (
         "system",
-        "You are merging podcast notes.\n"
+        "You are cleaning and deduplicating notes.\n"
         "Rules:\n"
-        "- Merge overlapping ideas\n"
-        "- Remove repetition\n"
-        "- Keep factual points only\n"
-        "- Preserve the original order\n"
-        "- Do NOT add new information\n"
+        "- Do NOT summarize\n"
+        "- Do NOT remove ideas\n"
+        "- Only merge bullets that say the SAME thing\n"
+        "- Keep all unique points\n"
+        "- Preserve bullet format\n"
     ),
     (
         "human",
