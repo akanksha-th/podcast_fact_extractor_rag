@@ -4,7 +4,7 @@ from src.core.ingestion import get_transcription
 from src.core.chunking import langchain_splitter
 from sentence_transformers import SentenceTransformer
 from src.core.storage import store_vectors, fetch_emb
-from src.utils.chunk_utils import clean_transcript, batched
+from src.utils.chunk_utils import clean_transcript, batched, chunk_sections
 from src.core.llm import (
     llm, rag_prompt,
     chunk_llm, section_llm, notes_llm,
@@ -69,18 +69,24 @@ def route_task(state: ExtractorState) -> str:
 # -----
 def notes_node(state: ExtractorState) -> ExtractorState:
     print("[Notes] Starting hierarchical notes generation...")
+    os.makedirs("outputs", exist_ok=True)
     
     # ------ Stage 1: Chunk Notes -----
     chunk_notes = []
     chunk_notes_chain = chunk_notes_prompt | chunk_llm
 
+    print("[Notes] Starting Chunk Notes generation...")
     for i, chunk in enumerate(state["chunks"]):
         chunk = clean_transcript(chunk)
         if len(chunk.strip()) < 200:
             continue
-        chunk_notes.append(chunk_notes_chain.invoke({
-            "trans_context": chunk
-        }))
+
+        note = chunk_notes_chain.invoke({"trans_context": chunk})
+        chunk_notes.append(note)
+
+        # checkpoint
+        with open("outputs/chunk_notes.md", "w", encoding="utf-8") as f:
+            f.write(chunk_notes)
 
         if i % 10 == 0:
             print(f"[Notes] Processed chunk {i+1}/{len(state['chunks'])}")
@@ -89,20 +95,27 @@ def notes_node(state: ExtractorState) -> ExtractorState:
     section_notes = []
     sec_notes_chain = sec_notes_prompt | section_llm
 
-    for batch in batched(chunk_notes, size=6):
-        section_notes.append(sec_notes_chain.invoke({
-            "chunk_notes":"\n".join(batch) 
-        }))
+    print("[Notes] Starting Section Notes generation...")
+    for i, batch in enumerate(batched(chunk_notes, size=6)):
+        sec = sec_notes_chain.invoke({"chunk_notes":"\n".join(batch)})
+        section_notes.append(sec)
+
+        with open("outputs/section_notes.md", "w", encoding="utf-8") as f:
+            f.write(section_notes)
+
+        if i % 10 == 0:
+            print(f"[Notes] Processed sections {i+1}/{int(len(state['chunks'])/6)}")
 
     # ------ Stage 3: Final Notes -----
     final_notes_chain = final_notes_prompt | notes_llm
 
-    final_notes = final_notes_chain.invoke({
-        "section_notes": "\n".join(section_notes)
+    print("[Notes] Starting Final Notes generation...")
+    for sec in chunk_sections(section_notes):
+        final_notes = final_notes_chain.invoke({
+        "section_notes": "\n".join(sec)
     })
 
     state["notes"] = final_notes
-    os.makedirs("outputs", exist_ok=True)
     with open("outputs/podcast_notes.md", "w", encoding="utf-8") as f:
         f.write(final_notes)
 
@@ -197,7 +210,8 @@ def build_graph() -> StateGraph:
 if __name__ == "__main__":
     # run on CLI using "python -m src.agents.agent_v1"
 
-    url = "https://youtu.be/cUbe6HbFncE?si=ellaHl0A8pERo_OH"
+    # url = "https://youtu.be/cUbe6HbFncE?si=ellaHl0A8pERo_OH"
+    url = "https://youtu.be/UPk56BR1Cmk?si=sRPakuv_DlAkbYfG"
     app = build_graph()
 
     result = app.invoke({

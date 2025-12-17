@@ -13,3 +13,21 @@ def batched(iterable, size):
     it = iter(iterable)
     while batch := list(islice(it, size)):
         yield batch
+
+
+MAX_SECTION_CHARS = 1500
+def chunk_sections(section_notes):
+    chunks = []
+    current = ""
+
+    for note in section_notes:
+        if len(current) + len(note) < MAX_SECTION_CHARS:
+            current += "\n" + note
+        else:
+            chunks.append(current)
+            current = note
+    
+    if current:
+        chunks.append(current)
+
+    return chunks
