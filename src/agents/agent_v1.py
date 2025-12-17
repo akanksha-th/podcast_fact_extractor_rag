@@ -1,10 +1,14 @@
 from langgraph.graph import StateGraph, START, END
 from typing import TypedDict, List
 from src.core.ingestion import get_transcription
+from src.core.chunking import langchain_splitter
 from sentence_transformers import SentenceTransformer
 from src.core.storage import store_vectors, fetch_emb
-from src.utils.cleaner import clean_transcript
-from src.core.llm import llm, rag_prompt, notes_prompt
+from src.utils.chunk_utils import clean_transcript, batched
+from src.core.llm import (
+    llm, rag_prompt,
+    chunk_notes_prompt, sec_notes_prompt, final_notes_prompt
+)
 from IPython.display import display, Image
 import os
 
@@ -32,9 +36,8 @@ def transcription_node(state: ExtractorState) -> ExtractorState:
 embedder = SentenceTransformer("intfloat/multilingual-e5-base")
 def chunk_and_embed_node(state: ExtractorState) -> ExtractorState:
     """Chunks the transcripts and embeds them"""
-    chunk_size = 500
     text = state["transcripts"]
-    chunks = [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]
+    chunks = langchain_splitter(text)
     embeddings = embedder.encode(chunks)
 
     state["chunks"] = chunks
@@ -64,21 +67,45 @@ def route_task(state: ExtractorState) -> str:
 
 # -----
 def notes_node(state: ExtractorState) -> ExtractorState:
-    notes_chain = notes_prompt | llm
-    notes_per_chunk = []
+    print("[Notes] Starting hierarchical notes generation...")
+    
+    # ------ Stage 1: Chunk Notes -----
+    chunk_notes = []
+    chunk_notes_chain = chunk_notes_prompt | llm
 
-    for chunk in state["chunks"][:20]:  # Chunk cap
+    for i, chunk in enumerate(state["chunks"]):
         chunk = clean_transcript(chunk)
-        chunk_notes = notes_chain.invoke({
+        if len(chunk.strip()) < 200:
+            continue
+        chunk_notes.append(chunk_notes_chain.invoke({
             "trans_context": chunk
-        })
-        notes_per_chunk.append(chunk_notes)
+        }))
 
-    state["notes"] = "\n\n".join(notes_per_chunk)
-    print("[Agent] Notes generated.")
+        if i % 10 == 0:
+            print(f"[Notes] Processed chunk {i+1}/{len(state['chunks'])}")
 
+    # ------ Stage 2: Section Notes -----
+    section_notes = []
+    sec_notes_chain = sec_notes_prompt | llm
+
+    for batch in batched(chunk_notes, size=6):
+        section_notes.append(sec_notes_chain.invoke({
+            "chunk_notes":"\n".join(batch) 
+        }))
+
+    # ------ Stage 3: Final Notes -----
+    final_notes_chain = final_notes_prompt | llm
+
+    final_notes = final_notes_chain.invoke({
+        "section_notes": "\n".join(section_notes)
+    })
+
+    state["notes"] = final_notes
+    os.makedirs("outputs", exist_ok=True)
     with open("outputs/podcast_notes.md", "w", encoding="utf-8") as f:
-        f.write(state["notes"])
+        f.write(final_notes)
+
+    print("[Agent] Notes generation completed.")
 
     print(f"Notes: {state['notes']}")
 

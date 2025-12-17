@@ -1,5 +1,5 @@
 from .yt_parser import parse_youtube_json_transcript
-from .cleaner import clean_transcript
+from .chunk_utils import clean_transcript
 
 
 __all__ = [

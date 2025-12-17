@@ -5,5 +5,7 @@ qdrant_client
 gpt4all
 langchain
 langchain-community
+langchain-text-splitters
 langgraph
 streamlit
+nltk

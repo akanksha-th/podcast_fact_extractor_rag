@@ -24,18 +24,54 @@ rag_prompt = ChatPromptTemplate([
     )
 ])
 
-notes_prompt = ChatPromptTemplate([
+chunk_notes_prompt = ChatPromptTemplate([
     (
         "system",
-        "You are an expert note-taker.\n"
-        "- Write ONLY bullet points\n"
-        "- Use simple language\n"
-        "- Do NOT repeat the transcript\n"
-        "- Do NOT include speaker names\n"
-        "- Do NOT include instructions\n"
+        "You extract factual notes from a podcast transcript.\n"
+        "Rules:\n"
+        "- Use bullet points only\n"
+        "- Each bullet point should be a single idea\n"
+        "- Keep bullets short and concrete\n"
+        "- Do NOT summarize the whole podcast\n"
+        "- Do NOT repeat sentence verbatim\n"
+        "- Do NOT add opinions or interpretations\n"
     ),
     (
         "human",
-        "Transcript:\n{trans_context}\n\nNotes:"
+        "Transcript:\n{trans_context}\n\n Bullet Notes:"
+    )
+])
+
+sec_notes_prompt = ChatPromptTemplate([
+    (
+        "system",
+        "You are merging podcast notes.\n"
+        "Rules:\n"
+        "- Merge overlapping ideas\n"
+        "- Remove repetition\n"
+        "- Keep factual points only\n"
+        "- Preserve the original order\n"
+        "- Do NOT add new information\n"
+    ),
+    (
+        "human",
+        "Notes:\n{chunk_notes}\n\n Merged Notes:"
+    )
+])
+
+final_notes_prompt = ChatPromptTemplate([
+    (
+        "system",
+        "You are organizing podcast notes into a clean structure.\n"
+        "Rules:\n"
+        "- Use clear headings\n"
+        "- Group related points"
+        "- Keep bullet points concise\n"
+        "- Do NOT invent content\n"
+        "- Do NOT repeat ideas\n"
+    ),
+    (
+        "human",
+        "Notes:\n{section_notes}\n\n Structured Notes:"
     )
 ])
