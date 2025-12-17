@@ -7,6 +7,7 @@ from src.core.storage import store_vectors, fetch_emb
 from src.utils.chunk_utils import clean_transcript, batched
 from src.core.llm import (
     llm, rag_prompt,
+    chunk_llm, section_llm, notes_llm,
     chunk_notes_prompt, sec_notes_prompt, final_notes_prompt
 )
 from IPython.display import display, Image
@@ -71,7 +72,7 @@ def notes_node(state: ExtractorState) -> ExtractorState:
     
     # ------ Stage 1: Chunk Notes -----
     chunk_notes = []
-    chunk_notes_chain = chunk_notes_prompt | llm
+    chunk_notes_chain = chunk_notes_prompt | chunk_llm
 
     for i, chunk in enumerate(state["chunks"]):
         chunk = clean_transcript(chunk)
@@ -86,7 +87,7 @@ def notes_node(state: ExtractorState) -> ExtractorState:
 
     # ------ Stage 2: Section Notes -----
     section_notes = []
-    sec_notes_chain = sec_notes_prompt | llm
+    sec_notes_chain = sec_notes_prompt | section_llm
 
     for batch in batched(chunk_notes, size=6):
         section_notes.append(sec_notes_chain.invoke({
@@ -94,7 +95,7 @@ def notes_node(state: ExtractorState) -> ExtractorState:
         }))
 
     # ------ Stage 3: Final Notes -----
-    final_notes_chain = final_notes_prompt | llm
+    final_notes_chain = final_notes_prompt | notes_llm
 
     final_notes = final_notes_chain.invoke({
         "section_notes": "\n".join(section_notes)

@@ -24,17 +24,20 @@ rag_prompt = ChatPromptTemplate([
     )
 ])
 
+
+chunk_llm = GPT4All(
+    model="./models/phi-2.Q4_0.gguf",
+    n_predict=64,
+    temp=0.0,
+)
+
 chunk_notes_prompt = ChatPromptTemplate([
     (
         "system",
         "You extract factual notes from a podcast transcript.\n"
-        "Rules:\n"
-        "- Use bullet points only\n"
-        "- Each bullet point should be a single idea\n"
-        "- Keep bullets short and concrete\n"
-        "- Do NOT summarize the whole podcast\n"
-        "- Do NOT repeat sentence verbatim\n"
-        "- Do NOT add opinions or interpretations\n"
+        "Summarize the transcript into 3–5 SHORT bullet points. "
+        "Each bullet MUST be under 12 words. "
+        "No explanations. No repetition."
     ),
     (
         "human",
@@ -42,6 +45,12 @@ chunk_notes_prompt = ChatPromptTemplate([
     )
 ])
 
+
+section_llm = GPT4All(
+    model="./models/phi-2.Q4_0.gguf",
+    n_predict=96,
+    temp=0.0,
+)
 sec_notes_prompt = ChatPromptTemplate([
     (
         "system",
@@ -59,6 +68,11 @@ sec_notes_prompt = ChatPromptTemplate([
     )
 ])
 
+notes_llm = GPT4All(
+    model="./models/phi-2.Q4_0.gguf",
+    n_predict=128,
+    temp=0.0,
+)
 final_notes_prompt = ChatPromptTemplate([
     (
         "system",
