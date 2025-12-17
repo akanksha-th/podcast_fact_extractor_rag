@@ -68,24 +68,3 @@ sec_notes_prompt = ChatPromptTemplate([
     )
 ])
 
-notes_llm = GPT4All(
-    model="./models/phi-2.Q4_0.gguf",
-    n_predict=128,
-    temp=0.0,
-)
-final_notes_prompt = ChatPromptTemplate([
-    (
-        "system",
-        "You are organizing podcast notes into a clean structure.\n"
-        "Rules:\n"
-        "- Use clear headings\n"
-        "- Group related points"
-        "- Keep bullet points concise\n"
-        "- Do NOT invent content\n"
-        "- Do NOT repeat ideas\n"
-    ),
-    (
-        "human",
-        "Notes:\n{section_notes}\n\n Structured Notes:"
-    )
-])

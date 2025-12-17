@@ -7,8 +7,8 @@ from src.core.storage import store_vectors, fetch_emb
 from src.utils.chunk_utils import clean_transcript, batched, chunk_sections
 from src.core.llm import (
     llm, rag_prompt,
-    chunk_llm, section_llm, notes_llm,
-    chunk_notes_prompt, sec_notes_prompt, final_notes_prompt
+    chunk_llm, section_llm,
+    chunk_notes_prompt, sec_notes_prompt, 
 )
 from IPython.display import display, Image
 import os
@@ -106,21 +106,8 @@ def notes_node(state: ExtractorState) -> ExtractorState:
         if i % 10 == 0:
             print(f"[Notes] Processed sections {i+1}/{int(len(state['chunks'])/6)}")
 
-    # # ------ Stage 3: Final Notes -----
-    # final_notes_chain = final_notes_prompt | notes_llm
-    # final_notes = []
-
-    # print("[Notes] Starting Final Notes generation...")
-    # for sec in chunk_sections(section_notes):
-    #     part = final_notes_chain.invoke({
-    #     "section_notes": "\n".join(sec)
-    #     })
-    #     final_notes.append(part)
-
-    #     with open("outputs/podcast_notes.md", "a", encoding="utf-8") as f:
-    #         f.write(part)
-
-    state["notes"] = section_notes
+    final_notes = "\n\n".join(section_notes)
+    state["notes"] = final_notes
     print("[Agent] Notes generation completed.")
 
     print(f"Notes: {state['notes']}")
