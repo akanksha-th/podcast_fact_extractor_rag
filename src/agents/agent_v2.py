@@ -375,7 +375,7 @@ def notes_node(state: ExtractorState) -> ExtractorState:
                         chunk_notes.append(formatted_notes)
 
                     if settings.save_intermediate_notes:
-                        open("outputs/chunk_notes.md", "w", encoding="utf-8").write(formatted_notes + "\n")
+                        open("outputs/chunk_notes.md", "a", encoding="utf-8").write(formatted_notes + "\n")
 
                     if i % 10 == 0:
                         print(f"\t\t Progress: {i+1}/{len(state['chunks'])}")
@@ -403,7 +403,7 @@ def notes_node(state: ExtractorState) -> ExtractorState:
                         section_notes.append(formatted_sec)
 
                     if settings.save_intermediate_notes:
-                        open("outputs/section_notes.md", "w", encoding="utf-8").write(formatted_sec + "\n\n")
+                        open("outputs/section_notes.md", "a", encoding="utf-8").write(formatted_sec + "\n\n")
 
                     if i % 10 == 0:
                         print(f"[Notes] Processed sections {i+1}/{int(len(state['chunks'])/6)}")
