@@ -542,7 +542,7 @@ if __name__ == "__main__":
 
     img_bytes = app.get_graph().draw_mermaid_png()
     os.makedirs("graph_images", exist_ok=True)
-    output_path = "graph_images/agent_graph_v1.png"
+    output_path = "graph_images/agent_graph_v2.png"
 
     with open(output_path, "wb") as f:
         f.write(img_bytes)
