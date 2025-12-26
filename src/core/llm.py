@@ -34,14 +34,34 @@ chunk_llm = GPT4All(
 chunk_notes_prompt = ChatPromptTemplate([
     (
         "system",
-        "You extract factual notes from a podcast transcript.\n"
-        "Summarize the transcript into 3–5 SHORT bullet points. "
-        "Each bullet MUST be under 12 words. "
-        "No explanations. No repetition."
-    ),
+        """You extract key facts from podcast transcripts.
+
+        RULES:
+        1. Write 3-5 bullet points
+        2. Each bullet is ONE complete sentence
+        3. Keep bullets under 15 words
+        4. Use simple language
+        5. Focus on main ideas only
+        6. NO incomplete sentences
+        7. NO trailing "and", "or", "but"
+
+        EXAMPLES:
+
+        Good bullets:
+        • Python was created by Guido van Rossum in 1991.
+        • The speaker recommends practicing daily for best results.
+        • Machine learning models need large amounts of training data.
+
+        Bad bullets (DON'T DO THIS):
+        • Python was created by ← INCOMPLETE
+        • The speaker recommends practicing daily and ← INCOMPLETE
+        • Machine learning models need data because it ← INCOMPLETE
+
+        Extract ONLY complete, standalone facts."""
+            ),
     (
         "human",
-        "Transcript:\n{trans_context}\n\n Bullet Notes:"
+        "Transcript:\n{trans_context}\n\nFacts:"
     )
 ])
 
@@ -54,17 +74,39 @@ section_llm = GPT4All(
 sec_notes_prompt = ChatPromptTemplate([
     (
         "system",
-        "You are cleaning and deduplicating notes.\n"
-        "Rules:\n"
-        "- Do NOT summarize\n"
-        "- Do NOT remove ideas\n"
-        "- Only merge bullets that say the SAME thing\n"
-        "- Keep all unique points\n"
-        "- Preserve bullet format\n"
-    ),
+        """You merge duplicate bullet points while keeping all unique information.
+
+        TASK: Remove EXACT duplicates. Keep everything else.
+
+        RULES:
+        1. If two bullets say the SAME thing → keep one
+        2. If two bullets say DIFFERENT things → keep both
+        3. Each bullet MUST be a complete sentence
+        4. NO incomplete bullets
+        5. Preserve bullet format (•)
+
+        EXAMPLES:
+
+        Input:
+        • Python is fast
+        • Python is fast
+        • Python is efficient
+
+        Output:
+        • Python is fast
+        • Python is efficient
+
+        Input:
+        • The speaker discussed AI
+        • AI was mentioned by the speaker
+        • Machine learning requires data
+
+        Output:
+        • The speaker discussed AI
+        • Machine learning requires data"""
+            ),
     (
         "human",
-        "Notes:\n{chunk_notes}\n\n Merged Notes:"
+        "Bullets to merge:\n{chunk_notes}\n\nMerged bullets:"
     )
 ])
-

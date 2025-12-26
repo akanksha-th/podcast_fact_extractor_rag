@@ -8,7 +8,7 @@ from src.core.ingestion import get_transcription
 from src.core.chunking import langchain_splitter
 from sentence_transformers import SentenceTransformer
 from src.core.storage import store_vectors, fetch_emb
-from src.utils.chunk_utils import clean_transcript, batched, chunk_sections
+from src.utils.chunk_utils import clean_transcript, batched, clean_llm_bullets
 from src.core.llm import (
     llm, rag_prompt,
     chunk_llm, section_llm,
@@ -367,11 +367,15 @@ def notes_node(state: ExtractorState) -> ExtractorState:
                     continue
 
                 try:
-                    note = chunk_notes_chain.invoke({"trans_context": chunk})
-                    chunk_notes.append(note)
+                    raw_notes = chunk_notes_chain.invoke({"trans_context": chunk})
+                    clean_bullets = clean_llm_bullets(raw_notes)
+
+                    if clean_bullets:
+                        formatted_notes = "\n".join([f"• {b}" for b in clean_bullets])
+                        chunk_notes.append(formatted_notes)
 
                     if settings.save_intermediate_notes:
-                        open("outputs/chunk_notes.md", "a", encoding="utf-8").write(note + "\n")
+                        open("outputs/chunk_notes.md", "w", encoding="utf-8").write(formatted_notes + "\n")
 
                     if i % 10 == 0:
                         print(f"\t\t Progress: {i+1}/{len(state['chunks'])}")
@@ -392,11 +396,14 @@ def notes_node(state: ExtractorState) -> ExtractorState:
             sections = list(batched(chunk_notes, size=settings.section_batch_size))
             for i, batch in enumerate(sections):
                 try:
-                    sec = sec_notes_chain.invoke({"chunk_notes":"\n".join(batch)})
-                    section_notes.append(sec)
+                    raw_sec = sec_notes_chain.invoke({"chunk_notes":"\n".join(batch)})
+                    clean_bullets = clean_llm_bullets(raw_sec)
+                    if clean_bullets:
+                        formatted_sec = "\n".join([f"• {b}" for b in clean_bullets])
+                        section_notes.append(formatted_sec)
 
                     if settings.save_intermediate_notes:
-                        open("outputs/section_notes.md", "a", encoding="utf-8").write(sec + "\n\n")
+                        open("outputs/section_notes.md", "w", encoding="utf-8").write(formatted_sec + "\n\n")
 
                     if i % 10 == 0:
                         print(f"[Notes] Processed sections {i+1}/{int(len(state['chunks'])/6)}")

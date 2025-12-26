@@ -52,6 +52,7 @@ data/**/*.db*
 # -----------------------------
 models/
 outputs/
+checkpoints/
 
 # -----------------------------
 # VECTOR STORES / RAG INDEXES
