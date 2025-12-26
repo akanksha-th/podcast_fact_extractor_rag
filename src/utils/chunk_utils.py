@@ -58,3 +58,18 @@ def clean_llm_bullets(text: str) -> List[str]:
         bullets.append(line)
 
     return bullets
+
+
+if __name__ == "__main__":
+    test_output = """
+    1) Python was created in 1991
+    2) It is
+    3) The language emphasizes readability.
+    4) Python supports multiple paradigms and
+    5) It has a large standard library.
+    """
+
+    cleaned = clean_llm_bullets(test_output)
+    print("Cleaned bullets:")
+    for bullet in cleaned:
+        print(f"{bullet}")
