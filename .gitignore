@@ -51,6 +51,7 @@ data/**/*.db*
 # MODELS
 # -----------------------------
 models/
+outputs/
 
 # -----------------------------
 # VECTOR STORES / RAG INDEXES

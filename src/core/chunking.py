@@ -12,15 +12,15 @@ def naive_chunking(text, chunk_size=500):
 # ---------
 splitter = RecursiveCharacterTextSplitter(
     chunk_size=800,
-    chunk_overlap=120,
-    separators=["\n\n", "\n", ".", " ", ""]
+    chunk_overlap=200,
+    separators=["\n\n", "\n", "."]
 )
 def langchain_splitter(text):
     return splitter.split_text(text)
 
 
 # ---------
-def semantic_chunks(text, max_chars=800, overlap=120):
+def semantic_chunks(text, max_chars=800, overlap=200):
     from nltk.tokenize import sent_tokenize
 
     sentences = sent_tokenize(text)

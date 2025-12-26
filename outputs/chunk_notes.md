@@ -46,3 +46,26 @@
 -It can reimagine the world as it should be, particularly at a time when public space and information are being privatized by neoliberalism. 
 -Great artists see things beyond what they really are. 
 -They inspire us to go beyond
+-The conversation is about how the principles taught by the speaker can change one's life in various aspects. 
+-One student mentioned that her Minecraft experience has changed every aspect of her life since joining a few months ago. 
+-The speaker believes that these principles are applicable to all areas of an individual's
+
+1) The brain can learn to control itself with practice (intention).
+2) Intention is important for learning new skills.
+3) Knowing how a car works helps you fix it when it breaks down. 
+4) My brother helped me by giving specific instructions on what to do.
+5)
+
+1) My brother is a mechanical engineer who helped me escape from the fire by pouring water in one hole.
+2) Understanding how our brain works helps us overcome challenges and improve various aspects of our lives.
+3) Applying knowledge about the brain can be beneficial for different areas, such as stress management or
+
+1) The human mind is like a car that's broken down on you and needs fixing.
+2) People feel stuck because of their own thoughts and beliefs, not necessarily external factors.
+3) Understanding how your brain works can help you start the process to get unstuck. 
+4) It takes
+
+1) Feeling stuck in career can be normal due to biology and prediction machine nature of our brains 
+2) Brain loves safety & predictability 
+3) Anxiety may arise from predictions about future events.
+

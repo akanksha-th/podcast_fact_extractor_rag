@@ -9,3 +9,6 @@ langchain-text-splitters
 langgraph
 streamlit
 nltk
+sounddevice
+scipy
+numpy
