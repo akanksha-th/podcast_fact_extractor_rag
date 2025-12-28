@@ -3,7 +3,7 @@ from typing import TypedDict, List
 from src.core.ingestion import get_transcription
 from sentence_transformers import SentenceTransformer
 from src.core.storage import store_vectors, fetch_emb
-from src.core.llm import llm, rag_prompt
+from src.core.llm_local import llm, rag_prompt
 from IPython.display import display, Image
 import os
 

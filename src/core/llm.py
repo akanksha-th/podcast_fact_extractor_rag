@@ -1,16 +1,28 @@
-from langchain_community.llms.gpt4all import GPT4All
+from dotenv import load_dotenv
+from langchain_huggingface import HuggingFaceEndpoint
 from langchain_core.prompts import ChatPromptTemplate
+import os
 
-llm = GPT4All(
-    model="./models/phi-2.Q4_0.gguf",
-    n_predict=128,  # lowered generation length from 256 to 128
-    temp=0.1,
-    top_k=40,
-    top_p=0.9,
-    repeat_penalty=1.1,
-    verbose=False,
-)
+HF_API_KEY = os.getenv("HUGGINGFACE_API_KEY", "")
 
+if not HF_API_KEY:
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+        HF_API_KEY = os.getenv("HUGGINGFACE_API_KEY", "")
+    except:
+        pass
+
+
+llm = HuggingFaceEndpoint(
+    repo_id="microsoft/phi-2",
+    temperature=0.1,
+    max_new_tokens=128,
+    huggingfacehub_api_token=HF_API_KEY,
+    timeout=120
+    )
+
+# RAG Prompt
 rag_prompt = ChatPromptTemplate([
     (
         "system",
@@ -24,89 +36,57 @@ rag_prompt = ChatPromptTemplate([
     )
 ])
 
-
-chunk_llm = GPT4All(
-    model="./models/phi-2.Q4_0.gguf",
-    n_predict=64,
-    temp=0.0,
+# Chunk notes LLM
+chunk_llm = HuggingFaceEndpoint(
+    repo_id="microsoft/phi-2",
+    temperature=0.0,
+    max_new_tokens=64,
+    huggingfacehub_api_token=HF_API_KEY,
+    timeout=120
 )
 
+# Chunk notes prompt
 chunk_notes_prompt = ChatPromptTemplate([
     (
         "system",
-        """You extract key facts from podcast transcripts.
+        """Extract 3-5 key facts. Each fact must be:
+- A complete sentence
+- Under 15 words
+- End with punctuation
 
-        RULES:
-        1. Write 3-5 bullet points
-        2. Each bullet is ONE complete sentence
-        3. Keep bullets under 15 words
-        4. Use simple language
-        5. Focus on main ideas only
-        6. NO incomplete sentences
-        7. NO trailing "and", "or", "but"
-
-        EXAMPLES:
-
-        Good bullets:
-        • Python was created by Guido van Rossum in 1991.
-        • The speaker recommends practicing daily for best results.
-        • Machine learning models need large amounts of training data.
-
-        Bad bullets (DON'T DO THIS):
-        • Python was created by ← INCOMPLETE
-        • The speaker recommends practicing daily and ← INCOMPLETE
-        • Machine learning models need data because it ← INCOMPLETE
-
-        Extract ONLY complete, standalone facts."""
-            ),
+Example:
+- Python was created by Guido van Rossum in 1991.
+- The language emphasizes code readability.
+- Python is used for web development and data science."""
+    ),
     (
         "human",
         "Transcript:\n{trans_context}\n\nFacts:"
     )
 ])
 
-
-section_llm = GPT4All(
-    model="./models/phi-2.Q4_0.gguf",
-    n_predict=96,
-    temp=0.0,
+# Section notes LLM
+section_llm = HuggingFaceEndpoint(
+    repo_id="microsoft/phi-2",
+    temperature=0.0,
+    max_new_tokens=96,
+    huggingfacehub_api_token=HF_API_KEY,
+    timeout=120
 )
+
+# Section notes prompt
 sec_notes_prompt = ChatPromptTemplate([
     (
         "system",
-        """You merge duplicate bullet points while keeping all unique information.
+        """Remove duplicate bullet points. Keep all unique information.
 
-        TASK: Remove EXACT duplicates. Keep everything else.
-
-        RULES:
-        1. If two bullets say the SAME thing → keep one
-        2. If two bullets say DIFFERENT things → keep both
-        3. Each bullet MUST be a complete sentence
-        4. NO incomplete bullets
-        5. Preserve bullet format (•)
-
-        EXAMPLES:
-
-        Input:
-        • Python is fast
-        • Python is fast
-        • Python is efficient
-
-        Output:
-        • Python is fast
-        • Python is efficient
-
-        Input:
-        • The speaker discussed AI
-        • AI was mentioned by the speaker
-        • Machine learning requires data
-
-        Output:
-        • The speaker discussed AI
-        • Machine learning requires data"""
-            ),
+Rules:
+- Each bullet must be complete sentence
+- Remove only exact duplicates
+- Keep all unique points"""
+    ),
     (
         "human",
-        "Bullets to merge:\n{chunk_notes}\n\nMerged bullets:"
+        "Bullets:\n{chunk_notes}\n\nMerged:"
     )
 ])

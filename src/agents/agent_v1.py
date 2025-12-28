@@ -5,7 +5,7 @@ from src.core.chunking import langchain_splitter
 from sentence_transformers import SentenceTransformer
 from src.core.storage import store_vectors, fetch_emb
 from src.utils.chunk_utils import clean_transcript, batched, chunk_sections
-from src.core.llm import (
+from src.core.llm_local import (
     llm, rag_prompt,
     chunk_llm, section_llm,
     chunk_notes_prompt, sec_notes_prompt, 
