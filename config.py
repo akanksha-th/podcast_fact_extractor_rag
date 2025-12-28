@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     embedding_batch_size: int = 32
 
     # ---- LLM Settings ----
+    llm_model: str = "Phi-2 (Local)"
     llm_model_path: str = "./models/phi-2.Q4_0.gguf"
     llm_temperature: float = 0.1
     llm_max_tokens: int = 128

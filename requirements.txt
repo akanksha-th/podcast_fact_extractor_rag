@@ -12,3 +12,4 @@ nltk
 sounddevice
 scipy
 numpy
+streamlit
