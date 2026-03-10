@@ -1,0 +1,27 @@
+[project]
+name = "podcast-fact-extractor-rag"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "faster-whisper>=1.2.1",
+    "gpt4all>=2.8.2",
+    "langchain>=1.2.10",
+    "langchain-community>=0.4.1",
+    "langchain-groq>=1.1.2",
+    "langchain-text-splitters>=1.1.1",
+    "langgraph>=1.0.10",
+    "nltk>=3.9.3",
+    "numpy>=2.4.3",
+    "qdrant-client>=1.17.0",
+    "scipy>=1.17.1",
+    "sentence-transformers>=5.2.3",
+    "streamlit>=1.55.0",
+    "yt-dlp>=2026.3.3",
+]
+
+[tool.uv.workspace]
+members = [
+    "podcast_fact_extractor_rag",
+]
