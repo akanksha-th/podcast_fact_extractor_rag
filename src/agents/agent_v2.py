@@ -14,7 +14,7 @@ from src.core.llm import (
     chunk_llm, section_llm,
     chunk_notes_prompt, sec_notes_prompt, 
 )
-from config import settings
+from api.core.config import settings
 from src.utils.logger import get_logger, LoggerContext
 
 logger = get_logger(__name__)

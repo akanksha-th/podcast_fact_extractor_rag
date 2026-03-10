@@ -64,7 +64,7 @@ def setup_logging(
 
 def get_logger(name: str) -> logging.Logger:
     try:
-        from config import settings
+        from api.core.config import settings
         log_file = settings.get_log_file_path()
         log_level = settings.log_level
     except ImportError:
