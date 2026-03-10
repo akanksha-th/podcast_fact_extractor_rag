@@ -12,9 +12,8 @@ __pycache__/
 
 # Virtual environments
 venv/
-.env/
+.env
 .venv/
-env/
 ENV/
 notebooks/
 
@@ -66,7 +65,7 @@ chroma/
 chroma_db/
 vectorstore/
 vector_store/
-db/
+# db/
 
 # -----------------------------
 # LOGS, CACHE, TEMP
@@ -110,7 +109,6 @@ ehthumbs.db
 # ENVIRONMENT / SECRET KEYS
 # -----------------------------
 *.env
-.env.*
 .envrc
 *.secret
 secrets/
