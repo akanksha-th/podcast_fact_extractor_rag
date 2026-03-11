@@ -46,8 +46,8 @@
 - **NFR12**: User question input is capped at 500 characters. Questions are passed to the LLM inside a structured prompt template. No user input is executed as code or system commands.
 - **NFR13**: API keys (Groq, Telegram Bot Token) must never appear in code or logs.
 
-**Observability**:
--**NFR14**: Every command invocation, its latency, success/failure status and hashed user_id must be logged in stuctured format.
+**Observability**: 
+- **NFR14**: Every command invocation, its latency, success/failure status and hashed user_id must be logged in stuctured format.
 - **NFR15**: Key metrics must be exposed: request count by command, p95 latency per command, cache hit rate, Groq API error rate.
 
 **Extensability**:
@@ -175,9 +175,9 @@ FastAPI /ingest:
     4. Extract video_id from URL (parse query params)
     5. Check daily per-user video ingestion count (FR2 — 10 videos/day, tracked in Postgres, reset at midnight UTC).
     6. Check Qdrant: does collection video_id exist with vectors?
-        YES -> skip ingestion, go to step 10
+        YES -> skip ingestion, go to step 11
     7. Check Postgres: does ingested_videos WHERE video_id = ? exist AND status = 'ready'?
-        YES -> re-warm Redis from stored data, go to step 10
+        YES -> re-warm Redis from stored data, go to step 11
     8. yt-dlp fetches transcript. If fails -> fall back to faster-whisper, return "Taking a little longer. Please hold up..."
     9. Chunking: split chunks into 512/384-token chunks and 64-token overlap
     10. Embedding: encode chunks via sentence-transformers
@@ -190,7 +190,7 @@ FastAPI /ingest:
 Telegram Bot:
     13. Send: "Your video is ready! Ask questions with /ask or get notes with /get_notes"
 ```
-**Key design decision:** steps 7-9 are I/O bound (network + computation). These run as a FastAPI `BackgroundTask` so the HTTP response returns immediately (step 11 returns "processing"), and the bot polls or uses a callback pattern to notify when done. This prevents Telegram's webhook from timing out.
+**Key design decision:** steps 8-10 are I/O bound (network + computation). These run as a FastAPI `BackgroundTask` so the HTTP response returns immediately (step 12 returns "processing"), and the bot polls or uses a callback pattern to notify when done. This prevents Telegram's webhook from timing out.
 
 ## Flow 2: `/ask` — The RAG Query Pipeline
 ```
