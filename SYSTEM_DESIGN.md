@@ -156,6 +156,15 @@ CREATE TABLE request_logs (
 );
 ```
 
+```sql
+CREATE TABLE daily_video_limit (
+    user_hash VARCHAR(64),
+    count_date DATE NOT NULL,
+    video_count INT NOT NULL DEFAULT 0,
+    PRIMARY KEY (user_hash, count_date) 
+);
+```
+
 **High-Level Design**:
 
 ![Architecture]()

@@ -1,0 +1,18 @@
+# Stage-1 : Bot-Build
+FROM python:3.14-slim as bot-builder
+WORKDIR /app
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+COPY pyproject.toml uv.lock ./
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
+RUN uv sync --frozen --group bot
+
+# Stage:2 - Runtime
+FROM python:3.14-slim
+WORKDIR /app
+COPY --from=bot-builder /app/.venv /app/.venv
+COPY . .
+ENV PATH="/app/.venv/bin:$PATH"
+CMD ["/app/.venv/bin/python", "bot/main.py"]
