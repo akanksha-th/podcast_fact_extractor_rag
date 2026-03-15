@@ -44,21 +44,16 @@ async def create_collection(video_id: str) -> None:
         vectors_config=VectorParams(size=settings.qdrant.vector_size, distance=DISTANCE)
     )
 
-async def upsert_chunks(video_id: str, chunks: list[dict]) -> None:
+async def upsert_chunks(video_id: str, chunks: list[dict], embeddings) -> None:
     """Store embedded chunks into Qdrant."""
     client = get_client()
     points = [
-        PointStruct(
-            id=chunk["id"],
-            vector=chunk["vector"],
-            payload={
-                "text": chunk["text"],
-                "chunk_index": chunk["chunk_index"],
-                "video_id": video_id
-            }
-        )
-        for chunk in chunks
-    ]
+            PointStruct(id=i, vector=emb.tolist(), payload={
+                "text": chunk,
+                "chunk_index": i,
+                "video_id": video_id})
+            for i, (chunk, emb) in enumerate(zip(chunks, embeddings))
+        ]
     await client.upsert(collection_name=video_id, points=points)
 
 

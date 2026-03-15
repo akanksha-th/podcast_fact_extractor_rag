@@ -46,10 +46,11 @@ async def fetchval(query: str, *args):
     async with get_pool().acquire() as conn:
         return await conn.fetchval(query, *args)
     
-async def execute(query: str, *args):
+async def execute(query: str, user_id: str, *args):
     """Run an INSERT, UPDATE, or DELETE. Returns status string."""
+    user_hash = hash_user_id(user_id)
     async with get_pool().acquire() as conn:
-        return await conn.execute(query, *args)
+        return await conn.execute(query, user_hash, *args)
     
 async def execute_many(query: str, args_list: list):
     """Run bulk insert"""
@@ -71,6 +72,6 @@ async def increment_daily_video_count(user_id: str):
     query = "INSERT INTO daily_video_limit (user_hash, count_date, video_count) \
         VALUES ($1, CURRENT_DATE, 1) \
         ON CONFLICT (user_hash, count_date) \
-        DO UPDATE SET video_count = daily_video_limit.video_count + 1 + 1;"
+        DO UPDATE SET video_count = daily_video_limit.video_count + 1;"
     return await execute(query, user_hash)
     

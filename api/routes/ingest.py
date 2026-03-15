@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from api.schema.api_responses import IngestRequest, IngestResponse
 from api.utils.url_validator import YouTubeService
-from api.utils.get_transcripts import TranscriptionService
+from api.services.ingestion.transcripts import TranscriptionService
 from api.db.postgres import get_daily_video_count
 from api.core.config import api_settings
 

@@ -77,6 +77,7 @@ class Settings(BaseSettings):
     # EMBEDDINGS
     embedding_model: str = "all-MiniLM-L6-v2"
     embedding_dim: int = 384
+    batch_size = 10
 
     # RETRIEVAL
     retrieval_top_k: int = 5
