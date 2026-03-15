@@ -7,6 +7,7 @@ from api.services.ingestion.embedding import EmbeddingService
 from sentence_transformers import SentenceTransformer
 from api.schema.api_responses import IngestResponse
 
+
 class IngestionPipeline:
     def __init__(self, model: SentenceTransformer):
         self.model = model

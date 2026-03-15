@@ -1,11 +1,15 @@
 from fastapi import FastAPI
 from api.routes import ingest
+import asyncio
 
 from contextlib import asynccontextmanager
+from api.core.config import api_settings
+from sentence_transformers import SentenceTransformer
 from api.db.postgres import create_pool, close_pool
 from api.db.redis import create_redis, close_redis
 from api.db.qdrant import create_qdrant_client, close_qdrant_client
 
+settings = api_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -13,6 +17,9 @@ async def lifespan(app: FastAPI):
     app.state.pg_pool = await create_pool()
     app.state.redis = await create_redis()
     app.state.qdrant = await create_qdrant_client()
+    app.state.embedding_model = await asyncio.to_thread(
+        SentenceTransformer, settings.embedding_model
+    )
     yield
     # Shutdown
     await close_qdrant_client()
@@ -32,7 +39,3 @@ def health():
 
 
 app.include_router(ingest.router)
-
-
-if __name__ == "__main__":
-    print(app.state.pg_pool)
