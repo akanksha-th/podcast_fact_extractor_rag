@@ -6,7 +6,8 @@ from pathlib import Path
 
 class GROQSettings(BaseSettings):
     api_key: str
-    groq_model: str = "llama3-8b-8192"
+    ask_model: str = "llama3-8b-8192"
+    notes_model: str = "llama3-70b-8192"
     model_version: str = "1"
     timeout_secs: int = 30
     retries: int = 2

@@ -12,6 +12,11 @@ class TelegramSettings(BaseSettings):
     webhook_base_url: str = ""
     webhook_path: str = "/webhook/telegram"
 
+    # API endpoints
+    ingest_endpoint: str = "/api/v1/ingest"
+    query_endpoint: str = "/api/v1/query"
+    notes_endpoint: str = "/api/v1/notes"
+
     @field_validator("bot_token")
     @classmethod
     def bot_token_must_not_be_empty(cls, v: str) -> str:
