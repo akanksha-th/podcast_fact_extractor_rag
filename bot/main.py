@@ -122,7 +122,26 @@ async def clear_session(message: Message, http_client: httpx.AsyncClient):
     except httpx.RequestError as e:
         await message.answer("Connection error: Could not connect to the API.")
 
-
+@dp.message(Command("get_notes"))
+async def fetch_notes(message: Message, http_client: httpx.AsyncClient):
+    telegram_user_id = str(message.from_user.id)
+    
+    try:
+        response = await http_client.post(
+            settings.notes_endpoint,
+            params={"user_id": telegram_user_id}
+        )
+        if response.status_code == 200:
+            data = response.json()
+            await message.answer(data["notes"])
+        elif response.status_code == 400:
+            await message.answer("Please enter a podcast URL first using /enter_url")
+        elif response.status_code == 429:
+            await message.answer("Rate limit exceeded.")
+        else:
+            await message.answer(f"Server Error: {response.status_code}")
+    except httpx.RequestError as e:
+        await message.answer("Connection error: Could not connect to the API.")
 
 
 async def main():

@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api.routes import ingest, query, history
+from api.routes import ingest, query, history, notes
 import asyncio
 
 from contextlib import asynccontextmanager
@@ -41,3 +41,4 @@ def health():
 app.include_router(ingest.router, prefix="/api/v1")
 app.include_router(query.router, prefix="/api/v1")
 app.include_router(history.router, prefix="/api/v1")
+app.include_router(notes.router, prefix="/api/v1")

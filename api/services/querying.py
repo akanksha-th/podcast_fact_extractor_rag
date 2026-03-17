@@ -2,7 +2,7 @@ from api.db.qdrant import search_chunks
 from api.db.redis import append_to_history, get_history
 from sentence_transformers import SentenceTransformer
 from api.services.ingestion.embedding import EmbeddingService
-from api.services.llm_service import LLMService
+from api.services.llm_service import QueryLLMService
 
 
 class QueryService:
@@ -19,7 +19,7 @@ class QueryService:
         sources = [{"chunk_index": chunk["chunk_index"], "score": chunk["score"]} for chunk in top_chunks]
         history = await get_history(user_id)
         
-        llm = LLMService(chunk_texts, history, question)
+        llm = QueryLLMService(chunk_texts, history, question)
         answer = await llm.get_answer()
 
         await append_to_history(user_id=user_id, question=question, answer=answer)

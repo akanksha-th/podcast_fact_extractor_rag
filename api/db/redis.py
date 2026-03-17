@@ -69,7 +69,7 @@ async def get_history(user_id: str) -> list[dict]:
 async def cache_notes(video_id: str, notes: str) -> None:
     """Cache notes generated and set TTL"""
     r = get_redis()
-    await r.set(f"video:{video_id}:notes", notes, ex=settings.redis_session_ttl)
+    await r.set(f"video:{video_id}:notes", notes, ex=settings.redis.session_ttl)
 
 async def get_cached_notes(video_id: str) -> str | None:
     """Returns cached notes or None"""
