@@ -12,6 +12,7 @@ class QueryLLMService:
         self.rag_prompt = build_rag_prompt(self.context, self.history, self.question)
 
         self.query_groq = ChatGroq(
+            groq_api_key=settings.groq.api_key,
             model=settings.groq.ask_model,
             temperature=0.0,
             max_retries=2
@@ -22,13 +23,14 @@ class QueryLLMService:
             response = await self.query_groq.ainvoke(self.rag_prompt)
             return response.content
         except Exception as e:
-            raise RuntimeError("LLM Service is temporarily unavailable.")
+            raise RuntimeError(f"LLM Service is temporarily unavailable: {e}")
         
 
 class NotesLLMService:
     def __init__(self):
 
         self.notes_groq = ChatGroq(
+            groq_api_key=settings.groq.api_key,
             model=settings.groq.notes_model,
             temperature=0.0,
             max_retries=2

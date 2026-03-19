@@ -51,7 +51,7 @@ class TranscriptionService:
             pass
 
         try:
-            output = f"scripts/{video_id}.mp3"
+            output = f".audio/{video_id}.mp3"
             ydl_opts = {
                 "format": "bestaudio/best",
                 "outtmpl": output,
@@ -77,3 +77,4 @@ class TranscriptionService:
         finally:
             if os.path.exists(output):
                 os.remove(output)
+

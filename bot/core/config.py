@@ -6,16 +6,19 @@ class TelegramSettings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        case_sensitive=False
+        case_sensitive=False,
+        extra="ignore"
     )
     bot_token: str
     webhook_base_url: str = ""
     webhook_path: str = "/webhook/telegram"
+    api_base_url: str = "http://localhost:8000"
 
     # API endpoints
     ingest_endpoint: str = "/api/v1/ingest"
     query_endpoint: str = "/api/v1/query"
     notes_endpoint: str = "/api/v1/notes"
+    status_endpoint: str = "/api/v1/status"
 
     @field_validator("bot_token")
     @classmethod

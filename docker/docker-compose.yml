@@ -36,6 +36,7 @@ services:
     restart: unless-stopped
 
   bot:
+    profiles: ["debug"]
     build: 
       context: .
       dockerfile: docker/Dockerfile.bot
@@ -47,6 +48,7 @@ services:
 
   # ARQ Worker
   worker:
+    profiles: ["debug"]
     build:
       context: .
       dockerfile: docker/Dockerfile.api
@@ -94,7 +96,7 @@ services:
     restart: unless-stopped
 
   qdrant:
-    image: qdrant/qdrant:v1.9.2
+    image: qdrant/qdrant:v1.13.0
     ports:
       - "6333:6333"
       - "6334:6334"                       # gRPC port
@@ -105,6 +107,7 @@ services:
     restart: unless-stopped
 
   mlflow:
+    profiles: ["prod"]
     image: ghcr.io/mlflow/mlflow:v2.13.0
     ports:
       - "5000:5000"
@@ -122,6 +125,7 @@ services:
     restart: unless-stopped
 
   prometheus:
+    profiles: ["prod"]
     image: prom/prometheus:v2.52.0
     ports:
       - "9090:9090"
@@ -134,6 +138,7 @@ services:
     restart: unless-stopped
 
   grafana:
+    profiles: ["prod"]
     image: grafana/grafana:10.4.0
     ports:
       - "3000:3000"

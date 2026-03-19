@@ -52,6 +52,11 @@ async def execute(query: str, user_id: str, *args):
     async with get_pool().acquire() as conn:
         return await conn.execute(query, user_hash, *args)
     
+async def execute_raw(query: str, *args):
+    """Run an INSERT, UPDATE, or DELETE without user_hash."""
+    async with get_pool().acquire() as conn:
+        return await conn.execute(query, *args)
+    
 async def execute_many(query: str, args_list: list):
     """Run bulk insert"""
     async with get_pool().acquire() as conn:
@@ -68,10 +73,9 @@ async def get_daily_video_count(user_id: str) -> int:
     return result or 0
 
 async def increment_daily_video_count(user_id: str):
-    user_hash = hash_user_id(user_id=user_id)
     query = "INSERT INTO daily_video_limit (user_hash, count_date, video_count) \
         VALUES ($1, CURRENT_DATE, 1) \
         ON CONFLICT (user_hash, count_date) \
         DO UPDATE SET video_count = daily_video_limit.video_count + 1;"
-    return await execute(query, user_hash)
+    return await execute(query, user_id)
     

@@ -45,6 +45,8 @@ data/*.sqlite3
 data/**/*.db*
 *.db
 *.sqlite
+.audio/
+workers/
 
 # -----------------------------
 # MODELS

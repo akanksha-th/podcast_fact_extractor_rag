@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
-from api.db.postgres import fetchval, execute
-from api.db.redis import cache_notes, get_cached_notes, get_session_field
+from api.db.postgres import fetchval
+from api.db.redis import get_cached_notes, get_session_field
 from api.core.config import api_settings
-# from api.schema.notes_responses import NotesRequest
 from api.services.notes_service import NotesGenService
 
 router = APIRouter()
@@ -31,13 +30,7 @@ async def fetch_notes(
     
     cached_notes = await get_cached_notes(video_id=video_id)
     if cached_notes:
-        return cached_notes
+        return {"notes": cached_notes, "video_id": video_id}
 
     notes = await notes_service.get_notes(user_id, video_id)
-    await cache_notes(video_id=video_id, notes=notes)
-    insert_query = """
-    INSERT INTO notes_generation_log (video_id, user_hash, notes_content, model_version)
-    VALUES ($1, $2, $3, $4);
-    """
-    await execute(insert_query, user_id, video_id, notes, settings.groq.model_version)
     return {"notes": notes, "video_id": video_id}

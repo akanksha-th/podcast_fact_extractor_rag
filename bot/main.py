@@ -13,7 +13,7 @@ dp = Dispatcher()
 # run this function when /start is received
 @dp.message(Command("start"))
 async def handle_start(message: Message):
-    await message.answer("Heyyyy")
+    await message.answer("Heyyyy\nEnter '/help' to know about the valid commands")
 
 @dp.message(Command("help"))
 async def get_help(message: Message):
@@ -46,6 +46,17 @@ async def handle_enter_url(message: Message, command: CommandObject, http_client
         )
         if response.status_code == 200:
             await message.answer("Processing...")
+            for _ in range(30):
+                await asyncio.sleep(2)
+                status_resp = await http_client.get(
+                    settings.status_endpoint,
+                    params={"user_id": telegram_user_id}
+                )
+                data = status_resp.json()
+                if data["status"] == "ready":
+                    await message.answer("Podcast ready! Ask questions with /ask")
+                    return
+            await message.answer("⏳ This podcast is being transcribed. It may take 30-60 minutes for long videos. We'll process it in the background — try /ask in about an hour.")
         elif response.status_code == 400:
             await message.answer("Invalid YouTube URL")
         elif response.status_code == 429:
@@ -125,15 +136,21 @@ async def clear_session(message: Message, http_client: httpx.AsyncClient):
 @dp.message(Command("get_notes"))
 async def fetch_notes(message: Message, http_client: httpx.AsyncClient):
     telegram_user_id = str(message.from_user.id)
+    await message.answer("⏳ Generating notes, this may take up to a minute...")
     
     try:
         response = await http_client.post(
             settings.notes_endpoint,
-            params={"user_id": telegram_user_id}
+            params={"user_id": telegram_user_id},
+            timeout=300.0
         )
         if response.status_code == 200:
             data = response.json()
-            await message.answer(data["notes"])
+            notes = data["notes"]
+            # split into 4000 char chunks (leave buffer)
+            chunk_size = 4000
+            for i in range(0, len(notes), chunk_size):
+                await message.answer(notes[i:i+chunk_size])
         elif response.status_code == 400:
             await message.answer("Please enter a podcast URL first using /enter_url")
         elif response.status_code == 429:
@@ -145,7 +162,7 @@ async def fetch_notes(message: Message, http_client: httpx.AsyncClient):
 
 
 async def main():
-    async with httpx.AsyncClient(base_url="http://api:8000") as client:
+    async with httpx.AsyncClient(base_url=settings.api_base_url) as client:
         await dp.start_polling(bot, http_client=client)
 
 if __name__ == "__main__":

@@ -1,13 +1,13 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
-from pydantic import computed_field, field_validator
+from pydantic import computed_field, field_validator, Field
 from pathlib import Path
 
 
 class GROQSettings(BaseSettings):
     api_key: str
-    ask_model: str = "llama3-8b-8192"
-    notes_model: str = "llama3-70b-8192"
+    ask_model: str = "llama-3.1-8b-instant"
+    notes_model: str = "llama-3.3-70b-versatile"
     model_version: str = "1"
     timeout_secs: int = 30
     retries: int = 2
@@ -56,10 +56,10 @@ class MlflowSettings(BaseSettings):
 
 
 class Settings(BaseSettings):
-    groq: GROQSettings = GROQSettings()
+    groq: GROQSettings = Field(default_factory=GROQSettings)
     redis: RedisSettings = RedisSettings()
     qdrant: QdrantSettings = QdrantSettings()
-    postgres: PostgresSettings = PostgresSettings()
+    postgres: PostgresSettings = Field(default_factory=PostgresSettings)
     mlflow: MlflowSettings = MlflowSettings()
     
     model_config = SettingsConfigDict(
@@ -78,7 +78,7 @@ class Settings(BaseSettings):
     # EMBEDDINGS
     embedding_model: str = "all-MiniLM-L6-v2"
     embedding_dim: int = 384
-    batch_size = 10
+    batch_size: int = 10
 
     # RETRIEVAL
     retrieval_top_k: int = 5

@@ -3,6 +3,7 @@ from api.schema.api_responses import IngestRequest, IngestResponse
 from api.utils.url_validator import YouTubeService
 from api.services.ingestion_pipeline import IngestionPipeline
 from api.db.postgres import get_daily_video_count
+from api.db.redis import get_session_field
 from api.core.config import api_settings
 
 router = APIRouter()
@@ -43,8 +44,10 @@ async def ingest_url(
         body.video_url,
         body.user_id)
 
+    status = await get_session_field(body.user_id, "status")
+    print(status)
     return IngestResponse(
-        status="processing",
+        status=status or "processing",
         video_id=video_id,
         message="⏳ Processing your podcast..."
     )

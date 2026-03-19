@@ -69,10 +69,10 @@ async def search_chunks(video_id: str, query_vector: list[float], top_k: int = 5
         with_payload=True
     )
     return [{
-        "text": r.payload["text"],
-        "chunk_index": r.payload["chunk_index"],
+        "text": r.payload.get("text", ""),
+        "chunk_index": r.payload.get("chunk_index", None),
         "score": r.score
-    } for r in results.points ]
+    } for r in results.points]
 
 async def get_all_chunks(video_id: str) -> list[str]:
     """Retrieve ALL chunks from a collection"""
