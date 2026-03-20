@@ -69,5 +69,6 @@ class IngestionPipeline:
         
         except Exception as e: 
             logger.info(f"Ingestion failed: {e}")
+            await set_session_field(user_id, "status", "failed")
             await execute(self.exec_query, user_id, video_id, False, None, type(e).__name__)
             raise RuntimeError(f"Ingestion couldn't be completed: {e}")

@@ -9,6 +9,9 @@ from api.db.postgres import create_pool, close_pool
 from api.db.redis import create_redis, close_redis
 from api.db.qdrant import create_qdrant_client, close_qdrant_client
 
+from arq import create_pool as arq_create_pool
+from arq.connections import RedisSettings
+
 settings = api_settings()
 
 @asynccontextmanager
@@ -20,8 +23,12 @@ async def lifespan(app: FastAPI):
     app.state.embedding_model = await asyncio.to_thread(
         SentenceTransformer, settings.embedding_model
     )
+    app.state.arq_pool = await arq_create_pool(
+        RedisSettings.from_dsn(settings.redis.arq_url)
+    )
     yield
     # Shutdown
+    await app.state.arq_pool.aclose()
     await close_qdrant_client()
     await close_redis()
     await close_pool()

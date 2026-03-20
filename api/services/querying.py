@@ -42,7 +42,7 @@ class QueryService:
         await append_to_history(user_id=user_id, question=question, answer=answer)
         
         return {
-            "result" : answer,
+            "answer" : answer,
             "source_chunks" : sources,
             "latency_ms" : None
         }

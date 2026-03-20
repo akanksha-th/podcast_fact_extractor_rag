@@ -14,6 +14,6 @@ class IngestRequest(BaseModel):
         return v
     
 class IngestResponse(BaseModel):
-    status: Literal["processing", "ready", "already_exists"]
+    status: Literal["processing", "ready", "already_exists", "failed"]
     video_id: str
     message: str

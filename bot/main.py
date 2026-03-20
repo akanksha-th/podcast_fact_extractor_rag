@@ -46,8 +46,8 @@ async def handle_enter_url(message: Message, command: CommandObject, http_client
         )
         if response.status_code == 200:
             await message.answer("Processing...")
-            for _ in range(30):
-                await asyncio.sleep(2)
+            for i in range(150):
+                await asyncio.sleep(4)  # check every 4 seconds = 10 minutes total
                 status_resp = await http_client.get(
                     settings.status_endpoint,
                     params={"user_id": telegram_user_id}
@@ -56,7 +56,7 @@ async def handle_enter_url(message: Message, command: CommandObject, http_client
                 if data["status"] == "ready":
                     await message.answer("Podcast ready! Ask questions with /ask")
                     return
-            await message.answer("⏳ This podcast is being transcribed. It may take 30-60 minutes for long videos. We'll process it in the background — try /ask in about an hour.")
+            await message.answer("⏳ This podcast is being transcribed. It may take a while.\n We're processing it in the background.")
         elif response.status_code == 400:
             await message.answer("Invalid YouTube URL")
         elif response.status_code == 429:

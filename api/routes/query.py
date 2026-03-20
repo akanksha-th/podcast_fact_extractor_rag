@@ -23,7 +23,7 @@ async def ask_query(
     response = await query_service.get_answer(video_id, body.user_id, body.question)
 
     return QueryResponse(
-        answer=response["result"],
+        answer=response["answer"],
         source_chunks=response["source_chunks"],
         latency_ms=response["latency_ms"]
     )

@@ -3,6 +3,7 @@ from faster_whisper import WhisperModel
 import asyncio
 import httpx
 import os
+import torch
 
 class TranscriptionService:
     async def _parse_yt(self, data: dict) -> str:
@@ -51,30 +52,34 @@ class TranscriptionService:
             pass
 
         try:
-            output = f".audio/{video_id}.mp3"
+            os.makedirs(".audio", exist_ok=True)
+            # audio_path = f".audio/{video_id}.mp3"
             ydl_opts = {
                 "format": "bestaudio/best",
-                "outtmpl": output,
+                "outtmpl": f".audio/{video_id}.%(ext)s",
                 "quiet": True,
                 'no_warnings': True,
-                "postprocessors": [{
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": "mp3",
-                    "preferredquality": "192"
-                }],
+                # "postprocessors": [{
+                #     "key": "FFmpegExtractAudio",
+                #     "preferredcodec": "mp3",
+                #     "preferredquality": "192"
+                # }],
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                await asyncio.to_thread(ydl.download, [url])
+                info = await asyncio.to_thread(ydl.extract_info, url, True)
+                audio_path = ydl.prepare_filename(info)
 
         except Exception as e:
             raise RuntimeError(f"Audio download failed: {e}")
 
-        model = await asyncio.to_thread(WhisperModel, "small", device="cpu", compute_type="int8")
+        device = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
+        compute_type = "float16" if device == "cuda" else "int8"
+        model = await asyncio.to_thread(WhisperModel, "small", device=device, compute_type=compute_type)
         try:
-            segments, _ = await asyncio.to_thread(model.transcribe, output, task="translate", language="en")
+            segments, _ = await asyncio.to_thread(model.transcribe, audio_path, task="translate", language="en", log_progress=True)
             text = "\n".join([s.text for s in segments])
             return text
         finally:
-            if os.path.exists(output):
-                os.remove(output)
+            if os.path.exists(audio_path):
+                os.remove(audio_path)
 

@@ -46,7 +46,6 @@ data/**/*.db*
 *.db
 *.sqlite
 .audio/
-workers/
 
 # -----------------------------
 # MODELS

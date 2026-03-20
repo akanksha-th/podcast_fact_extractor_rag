@@ -5,6 +5,8 @@ from api.services.ingestion_pipeline import IngestionPipeline
 from api.db.postgres import get_daily_video_count
 from api.db.redis import get_session_field
 from api.core.config import api_settings
+from arq import create_pool
+from arq.connections import RedisSettings
 
 router = APIRouter()
 settings = api_settings()
@@ -18,6 +20,7 @@ def get_ingestion_pipeline(request: Request) -> IngestionPipeline:
 
 @router.post("/ingest", response_model=IngestResponse)
 async def ingest_url(
+    request: Request,
     body: IngestRequest,
     background_tasks: BackgroundTasks,
     yt_service: YouTubeService = Depends(get_yt_service),
@@ -38,16 +41,18 @@ async def ingest_url(
             detail="Rate limit for today has been exhausted"
         )
     
-    background_tasks.add_task(
-        ingestion.run_ingestion_pipeline, 
-        video_id,
-        body.video_url,
-        body.user_id)
+    # background_tasks.add_task(
+    #     ingestion.run_ingestion_pipeline, video_id, body.video_url, body.user_id)
+    # status = await get_session_field(body.user_id, "status")
 
-    status = await get_session_field(body.user_id, "status")
-    print(status)
+
+    arq_pool = request.app.state.arq_pool
+    await arq_pool.enqueue_job(
+        "run_ingestion_job", video_id, body.video_url, body.user_id
+    )
+
     return IngestResponse(
-        status=status or "processing",
+        status="processing",
         video_id=video_id,
         message="⏳ Processing your podcast..."
     )
