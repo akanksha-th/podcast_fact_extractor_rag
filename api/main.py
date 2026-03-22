@@ -4,6 +4,7 @@ import asyncio
 
 from contextlib import asynccontextmanager
 from api.core.config import api_settings
+from api.core.logging_config import configure_logging
 from sentence_transformers import SentenceTransformer
 from api.db.postgres import create_pool, close_pool
 from api.db.redis import create_redis, close_redis
@@ -13,6 +14,7 @@ from arq import create_pool as arq_create_pool
 from arq.connections import RedisSettings
 
 settings = api_settings()
+configure_logging()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

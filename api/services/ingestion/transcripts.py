@@ -53,17 +53,11 @@ class TranscriptionService:
 
         try:
             os.makedirs(".audio", exist_ok=True)
-            # audio_path = f".audio/{video_id}.mp3"
             ydl_opts = {
                 "format": "bestaudio/best",
                 "outtmpl": f".audio/{video_id}.%(ext)s",
                 "quiet": True,
-                'no_warnings': True,
-                # "postprocessors": [{
-                #     "key": "FFmpegExtractAudio",
-                #     "preferredcodec": "mp3",
-                #     "preferredquality": "192"
-                # }],
+                'no_warnings': True
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = await asyncio.to_thread(ydl.extract_info, url, True)
