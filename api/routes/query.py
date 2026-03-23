@@ -20,7 +20,7 @@ async def ask_query(
             detail="Not linked to an active session. Enter URL first."
         )
     
-    response = await query_service.get_answer(video_id, body.user_id, body.question)
+    response = await query_service.get_answer(video_id=video_id, user_id=body.user_id, question=body.question)
 
     return QueryResponse(
         answer=response["answer"],

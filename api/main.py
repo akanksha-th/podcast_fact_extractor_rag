@@ -13,6 +13,8 @@ from api.db.qdrant import create_qdrant_client, close_qdrant_client
 from arq import create_pool as arq_create_pool
 from arq.connections import RedisSettings
 
+from prometheus_fastapi_instrumentator import Instrumentator
+
 settings = api_settings()
 configure_logging()
 
@@ -41,6 +43,9 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
     )
+
+Instrumentator().instrument(app).expose(app)
+
 
 @app.get("/health")
 def health():

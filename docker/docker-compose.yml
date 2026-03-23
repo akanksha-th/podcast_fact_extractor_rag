@@ -52,7 +52,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.api
-    command: ["python", "-m", "arq", "worker.tasks.WorkerSettings"]
+    command: ["python", "-m", "arq", "api.workers.run_worker"]
     env_file: .env 
     depends_on:
       postgres:
@@ -125,12 +125,12 @@ services:
     restart: unless-stopped
 
   prometheus:
-    profiles: ["prod"]
+    profiles: ["debug"]
     image: prom/prometheus:v2.52.0
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
@@ -138,7 +138,7 @@ services:
     restart: unless-stopped
 
   grafana:
-    profiles: ["prod"]
+    profiles: ["debug"]
     image: grafana/grafana:10.4.0
     ports:
       - "3000:3000"
@@ -147,7 +147,8 @@ services:
       GF_USERS_ALLOW_SIGN_UP: "false"
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ../monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ../monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
     depends_on:
       - prometheus
     restart: unless-stopped

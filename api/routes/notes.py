@@ -3,6 +3,7 @@ from api.db.postgres import fetchval
 from api.db.redis import get_cached_notes, get_session_field
 from api.core.config import api_settings
 from api.services.notes_service import NotesGenService
+from api.core.metrics import notes_cache_hits, notes_cache_misses
 
 router = APIRouter()
 settings = api_settings()
@@ -30,7 +31,9 @@ async def fetch_notes(
     
     cached_notes = await get_cached_notes(video_id=video_id)
     if cached_notes:
+        notes_cache_hits.inc()
         return {"notes": cached_notes, "video_id": video_id}
+    notes_cache_misses.inc()
 
     notes = await notes_service.get_notes(user_id, video_id)
     return {"notes": notes, "video_id": video_id}
