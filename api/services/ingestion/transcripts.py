@@ -1,9 +1,10 @@
 import yt_dlp
-from faster_whisper import WhisperModel
 import asyncio
 import httpx
 import os
-import torch
+from pathlib import Path
+from api.services.ingestion.audio_processing import AudioTranscriptionService
+
 
 class TranscriptionService:
     async def _parse_yt(self, data: dict) -> str:
@@ -66,14 +67,9 @@ class TranscriptionService:
         except Exception as e:
             raise RuntimeError(f"Audio download failed: {e}")
 
-        device = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
-        compute_type = "float16" if device == "cuda" else "int8"
-        model = await asyncio.to_thread(WhisperModel, "small", device=device, compute_type=compute_type)
         try:
-            segments, _ = await asyncio.to_thread(model.transcribe, audio_path, task="translate", language="en", log_progress=True)
-            text = "\n".join([s.text for s in segments])
-            return text
+            service = AudioTranscriptionService()
+            return await service.get_transcripts(Path(audio_path))
         finally:
             if os.path.exists(audio_path):
                 os.remove(audio_path)
-
