@@ -11,7 +11,6 @@ from api.db.postgres import create_pool
 from api.db.redis import create_redis
 from api.db.qdrant import create_qdrant_client
 from api.core.config import api_settings
-import groq, time
 
 settings = api_settings()
 
