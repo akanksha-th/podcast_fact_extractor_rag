@@ -48,6 +48,7 @@ class QueryService:
         return {
             "answer" : answer,
             "source_chunks" : sources,
+            "chunk_texts": chunk_texts,
             "latency_ms" : None
         }
     

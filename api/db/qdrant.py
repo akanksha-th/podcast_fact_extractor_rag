@@ -44,6 +44,11 @@ async def create_collection(video_id: str) -> None:
         vectors_config=VectorParams(size=settings.qdrant.vector_size, distance=DISTANCE)
     )
 
+async def delete_collection(video_id: str) -> None:
+    """Delete a collection (i.e., a podcast/video)."""
+    client = get_client()
+    await client.delete_collection(collection_name=video_id)
+    
 async def upsert_chunks(video_id: str, chunks: list[dict], embeddings) -> None:
     """Store embedded chunks into Qdrant."""
     client = get_client()

@@ -8,6 +8,7 @@ class GROQSettings(BaseSettings):
     api_key: str
     ask_model: str = "llama-3.1-8b-instant"
     notes_model: str = "llama-3.3-70b-versatile"
+    evaluation_model: str = "groq/compound-mini"
     model_version: str = "1"
     timeout_secs: int = 30
     retries: int = 2

@@ -25,5 +25,6 @@ async def ask_query(
     return QueryResponse(
         answer=response["answer"],
         source_chunks=response["source_chunks"],
+        chunk_texts=response["chunk_texts"],
         latency_ms=response["latency_ms"]
     )
